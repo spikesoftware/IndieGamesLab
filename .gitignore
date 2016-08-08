@@ -5,3 +5,4 @@ Common/packages/
 Common/IGL.Common.Tests/bin/
 Common/IGL.Common.Tests/FakesAssemblies/System.Configuration.4.0.0.0.Fakes.xml
 Common/IGL.Common.Tests/FakesAssemblies/
+Common/IGL.Common/bin/

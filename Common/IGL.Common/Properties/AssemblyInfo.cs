@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("IGL.Common")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Common library for IndieGamesLab components shared between client and server.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Spike Software Ltd")]
 [assembly: AssemblyProduct("IGL.Common")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
