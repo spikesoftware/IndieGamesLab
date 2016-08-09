@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace IGL.Game
+namespace IGL
 {
     public class GamePacketErrorArgs : EventArgs
     {

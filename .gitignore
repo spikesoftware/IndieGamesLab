@@ -1,8 +1,43 @@
-Common/IGL.Common.Tests/obj/
-Common/IGL.Common/bin/Debug/Newtonsoft.Json.xml
-Common/IGL.Common/obj/
-Common/packages/
-Common/IGL.Common.Tests/bin/
-Common/IGL.Common.Tests/FakesAssemblies/System.Configuration.4.0.0.0.Fakes.xml
-Common/IGL.Common.Tests/FakesAssemblies/
-Common/IGL.Common/bin/
+# Ignore thumbnails created by windows.
+Thumbs.db
+
+# Ignore files build by Visual Studio.
+*.obj
+*.pdb
+*.user
+*.aps
+*.pch
+*.vspscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.cache
+*.ilk
+*.log
+*.tmp
+[Bb]in
+[Dd]ebug*/
+*.lib
+*.sbr
+obj/
+[Rr]elease*/
+_ReSharper*/
+[Tt]est[Rr]esult*
+[Ll]icense.config
+[Ee][Pp]i[Ss]erver[Cc]ommerce[Ll]icense.config
+src/web/.idea/
+.vs/
+
+# SQL Server files.
+*.mdf
+*.ldf
+
+# Make sure no packages are ever accidentally commited.
+packages/
+node_modules/
+bower_components/
+
