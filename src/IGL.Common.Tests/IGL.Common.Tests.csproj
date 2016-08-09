@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="CloneTests.cs" />
     <Compile Include="EncryptTests.cs" />
+    <Compile Include="Helpers\Faker.cs" />
     <Compile Include="Helpers\SampleGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
