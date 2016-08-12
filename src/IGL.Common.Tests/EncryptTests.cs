@@ -10,7 +10,7 @@ namespace IGL.Common.Tests
         [TestMethod]
         public void GameEventEncryptionTest()
         {
-#if !FAKES_NOT_SUPPORTED
+#if !DO_NOT_FAKE
             using (Microsoft.QualityTools.Testing.Fakes.ShimsContext.Create())
             {
                 Faker.FakeOut();
@@ -27,7 +27,7 @@ namespace IGL.Common.Tests
                 Assert.AreEqual(event1.GameId, packet.GameEvent.GameId);
 
                 Assert.AreEqual(event1.Properties["stat_avg_level_1"], packet.GameEvent.Properties["stat_avg_level_1"]);
-#if !FAKES_NOT_SUPPORTED
+#if !DO_NOT_FAKE
             }
 #endif
         }

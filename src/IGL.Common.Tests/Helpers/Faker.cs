@@ -1,4 +1,4 @@
-﻿#if !FAKES_NOT_SUPPORTED
+﻿#if !DO_NOT_FAKE
 using System.Collections.Specialized;
 
 

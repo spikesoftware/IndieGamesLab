@@ -16,7 +16,7 @@ namespace IGL.Service.Tests
         public void GameEventListenerTaskTest1()
         {
             string queueName = "GameEvents";
-#if !FAKES_NOT_SUPPORTED
+#if !DO_NOT_FAKE
             using (Microsoft.QualityTools.Testing.Fakes.ShimsContext.Create())
             {
                 Helpers.Faker.FakeOut();
@@ -53,7 +53,7 @@ namespace IGL.Service.Tests
 
                 Trace.TraceInformation("GameEventListenerTaskTest1 ending {0}", _gameevents);
 
-#if !FAKES_NOT_SUPPORTED
+#if !DO_NOT_FAKE
             }
 #endif
         }

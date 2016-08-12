@@ -27,7 +27,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;DO_NOT_FAKE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -136,6 +136,7 @@
   <ItemGroup>
     <Fakes Include="Fakes\System.Configuration.fakes" />
     <Fakes Include="Fakes\Microsoft.WindowsAzure.Storage.fakes" />
+    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Choose>

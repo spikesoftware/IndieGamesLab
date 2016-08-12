@@ -37,7 +37,7 @@ namespace IGL.Service.Tests
         public void AddTaskRunnerTest()
         {
             var queueName = "GameEvents";
-#if !FAKES_NOT_SUPPORTED
+#if !DO_NOT_FAKE
             using (Microsoft.QualityTools.Testing.Fakes.ShimsContext.Create())
             {
                 Helpers.Faker.FakeOut();
@@ -61,7 +61,7 @@ namespace IGL.Service.Tests
 
                 var name = runner.GetType().ToString();
 
-#if !FAKES_NOT_SUPPORTED
+#if !DO_NOT_FAKE
             }
 #endif
         }

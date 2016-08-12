@@ -10,7 +10,7 @@ namespace IGL.Data.Test
         [TestMethod]
         public void InsertDefinition()
         {
-#if !FAKES_NOT_SUPPORTED
+#if !DO_NOT_FAKE
             using (Microsoft.QualityTools.Testing.Fakes.ShimsContext.Create())
             {
                 Helpers.Faker.FakeOut();
@@ -29,7 +29,7 @@ namespace IGL.Data.Test
                 var result = rep.InsertOrReplaceDefinition(taskDef);
 
                 Assert.AreEqual(true, result.WasSuccessful);
-#if !FAKES_NOT_SUPPORTED
+#if !DO_NOT_FAKE
             }
 #endif
         }

@@ -1,4 +1,4 @@
-﻿#if !FAKES_NOT_SUPPORTED
+﻿#if !DO_NOT_FAKE
 using Microsoft.ServiceBus.Fakes;
 using Microsoft.ServiceBus.Messaging;
 using Microsoft.ServiceBus.Messaging.Fakes;
