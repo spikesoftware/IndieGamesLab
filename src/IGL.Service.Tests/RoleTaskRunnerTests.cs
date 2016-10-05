@@ -44,7 +44,8 @@ namespace IGL.Service.Tests
 #endif
 
                 CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-                var runnerType = typeof(GameEventsListenerTask);               
+
+                var runnerType = Type.GetType("IGL.Service.Tasks.GameEventsListenerTask, IGL.Service");
 
                 RoleTaskRunner.OnGamePacketCompleted += RoleTaskRunner_OnGamePacketCompleted;
                 RoleTaskRunner.OnListenerError += RoleTaskRunner_OnListenerError;

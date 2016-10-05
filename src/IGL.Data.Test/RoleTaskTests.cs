@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using IGL.Service.Common;
 using IGL.Data.Repositories;
+using System.Collections.Generic;
 
 namespace IGL.Data.Test
 {
@@ -33,5 +34,25 @@ namespace IGL.Data.Test
             }
 #endif
         }
+
+        [TestMethod]
+        public void GetRoleTaskDefinitions()
+        {
+#if !DO_NOT_FAKE
+            using (Microsoft.QualityTools.Testing.Fakes.ShimsContext.Create())
+            {
+                Helpers.Faker.FakeOut();
+#endif
+
+            var rep = new RoleTaskRepository();
+
+            var result = rep.GetRoleTaskDefinitions();
+
+            Assert.AreEqual(true, result.WasSuccessful);
+#if !DO_NOT_FAKE
+            }
+#endif
+        }
+        
     }
 }

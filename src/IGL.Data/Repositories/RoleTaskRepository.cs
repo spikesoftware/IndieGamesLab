@@ -1,4 +1,6 @@
 ﻿using IGL.Service.Common;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace IGL.Data.Repositories
 {
@@ -16,6 +18,7 @@ namespace IGL.Data.Repositories
                     .ForMember(m => m.RowKey, s => s.MapFrom(g => g.Version));
 
                     cfg.CreateMap<ServiceEntities.RoleTaskDefinitionEntity, RoleTaskDefinition>();
+                    cfg.CreateMap(typeof(List<ServiceEntities.RoleTaskDefinitionEntity>), typeof(List<RoleTaskDefinition>));                    
                 }
             );
         }
@@ -23,6 +26,26 @@ namespace IGL.Data.Repositories
         public AzureResult InsertOrReplaceDefinition(RoleTaskDefinition definition)
         {
             return InsertOrReplace(definition);
+        }
+
+        public AzureResult<IEnumerable<RoleTaskDefinition>> GetRoleTaskDefinitions(string name = null, double? version = null)
+        {
+            var result = base.Get(name, version?.ToString());
+
+            var definitions = result.ResultObject.Select(d => new RoleTaskDefinition
+            {
+                Name = d.Name,
+                QueueName = d.QueueName,
+                Type = d.Type, 
+                Version = d.Version
+            });
+
+            return new AzureResult<IEnumerable<RoleTaskDefinition>>()
+            {
+                Code = result.Code,
+                Message = result.Message,
+                ResultObject = definitions
+            };
         }
     }
 }

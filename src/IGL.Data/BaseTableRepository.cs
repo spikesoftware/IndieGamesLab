@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 
 namespace IGL.Data
 {
@@ -107,46 +108,24 @@ namespace IGL.Data
             return table;
         }
 
-        protected List<T> Get(string partitionKey)
+        protected AzureResult<List<T>> Get(string partitionKey, string rowKey)
         {
+            var result = new List<T>();
             var sw = Stopwatch.StartNew();
 
             try
             {
-                var query = new TableQuery<T>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey));
+               
+                var query = new TableQuery<T>().Where(GenerateWhereClause(partitionKey, rowKey));
 
-                return _table.ExecuteQuery(query).ToList();
+                var x = _table.ExecuteQuery(query);
+
+                result.AddRange(x);
             }
             catch (Exception ex)
             {
                 Trace.TraceEvent(TraceEventType.Error, GetEventId(RepositoryAction.Get),
-                                "AzureTableRepository.Get(Table:{0} PartitionKey:{1}) failed with:{3}\nInnerMessage:{4}\nStackTrace:{5}",
-                                this._tableName,
-                                partitionKey,
-                                ex.Message,
-                                ex.InnerException == null ? "" : ex.InnerException.Message,
-                                ex.StackTrace);
-
-                throw ex;
-            }
-            finally
-            {
-                sw.Stop();
-                Trace.TraceInformation("AzureTableRepository.Get(Table:{0} PartitionKey:{1}) completed in {2} ticks.", this._tableName, partitionKey, sw.ElapsedTicks);
-            }
-        }
-        protected T Get(string partitionKey, string rowKey)
-        {
-            var sw = Stopwatch.StartNew();
-
-            try
-            {
-                return _table.Execute(TableOperation.Retrieve(partitionKey, rowKey)).Result as T;                
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceEvent(TraceEventType.Error, GetEventId(RepositoryAction.Get),
-                                "AzureTableRepository.Get(Table:{0} PartitionKey:{1} RowKey{2}) failed with:{3}\nInnerMessage:{4}\nStackTrace:{5}",
+                                "AzureTableRepository.Get(Table:{0} PartitionKey:{1} RowKey:{2}) failed with:{3}\nInnerMessage:{4}\nStackTrace:{5}",
                                 this._tableName,
                                 partitionKey,
                                 rowKey,
@@ -159,8 +138,32 @@ namespace IGL.Data
             finally
             {
                 sw.Stop();
-                Trace.TraceInformation("AzureTableRepository.Get(Table:{0} PartitionKey:{1} RowKey{2}) completed in {3} ticks.", this._tableName, partitionKey, rowKey, sw.ElapsedTicks);
+                Trace.TraceInformation("AzureTableRepository.Get(Table:{0} PartitionKey:{1} RowKey:{2}) completed in {3} ticks.", this._tableName, partitionKey, rowKey, sw.ElapsedTicks);
             }
+
+            return new AzureResult<List<T>>
+            {
+                Code = 0,
+                ResultObject = result
+            };
+        }
+
+        private string GenerateWhereClause(string partitionKey, string rowKey)
+        {            
+            if (!string.IsNullOrEmpty(rowKey) && !string.IsNullOrEmpty(rowKey))
+            {
+                return TableQuery.CombineFilters(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey),
+                                          TableOperators.And,
+                                          TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, rowKey));
+            }
+
+            if (!string.IsNullOrEmpty(rowKey))
+                return TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, rowKey);
+
+            if (!string.IsNullOrEmpty(partitionKey))
+                return TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey);
+            
+            return string.Empty;
         }
 
         enum RepositoryAction { Add = 100, Delete = 200, Update = 300, Get = 0 };

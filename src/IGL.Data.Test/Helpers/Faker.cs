@@ -1,10 +1,13 @@
 ﻿#if !DO_NOT_FAKE
+using IGL.Data.ServiceEntities;
+using IGL.Service.Common;
 using Microsoft.ServiceBus.Fakes;
 using Microsoft.ServiceBus.Messaging;
 using Microsoft.ServiceBus.Messaging.Fakes;
 using Microsoft.WindowsAzure.Storage.Fakes;
 using Microsoft.WindowsAzure.Storage.Table.Fakes;
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 
 
@@ -27,14 +30,40 @@ namespace IGL.Data.Test.Helpers
                         {
                             GetTableReferenceString = (tableReference) =>
                             {
-                                return new ShimCloudTable
+                                var zz = new ShimCloudTable()
                                 {
+                                    NameGet = () => "faked",
                                     CreateIfNotExistsTableRequestOptionsOperationContext = (x, y) => true,
+                                                                       ExecuteQueryTableQueryTableRequestOptionsOperationContext = (query, z, k) =>
+                                    {
+                                        var entity1 = new ShimDynamicTableEntity().Bind(new RoleTaskDefinitionEntity { PartitionKey = "P1", RowKey = "R1", Name = "Name", Type = "Type", QueueName = "QueueName" });
+                                        var entity2 = new ShimDynamicTableEntity().Bind(new RoleTaskDefinitionEntity { PartitionKey = "P2", RowKey = "R2", Name = "Name", Type = "Type", QueueName = "QueueName" });
+
+                                        var result = new List<Microsoft.WindowsAzure.Storage.Table.DynamicTableEntity>();
+                                        result.Add(entity1);
+                                        result.Add(entity2);
+
+                                        return result;
+                                    },
                                     ExecuteTableOperationTableRequestOptionsOperationContext = (operation, z, k) =>
                                     {
                                         return new ShimTableResult();
-                                    }
+                                    }                                    
                                 };
+
+                                zz.ExecuteQueryOf1TableQueryOfM0TableRequestOptionsOperationContext<RoleTaskDefinitionEntity>((query, options, context) =>
+                                {
+                                    var entity1 = new RoleTaskDefinitionEntity { PartitionKey = "P1", RowKey = "R1", Name = "Name", Type = "Type", QueueName = "QueueName" };
+                                    var entity2 = new RoleTaskDefinitionEntity { PartitionKey = "P2", RowKey = "R2", Name = "Name", Type = "Type", QueueName = "QueueName" };
+
+                                    var result = new List<RoleTaskDefinitionEntity>();
+                                    result.Add(entity1);
+                                    result.Add(entity2);
+
+                                    return result;
+                                });
+
+                                return zz;
                             }
                         }
                     };

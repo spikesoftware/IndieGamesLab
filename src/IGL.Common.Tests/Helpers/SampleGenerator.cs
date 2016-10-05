@@ -10,7 +10,7 @@ namespace IGL.Common.Tests.Helpers
         {
             GamePacket packet = new GamePacket
             {
-                GameId = 342550,
+                GameId = 999999,
                 Correlation = Guid.NewGuid().ToString(),
                 PacketNumber = 1
             };
@@ -31,7 +31,7 @@ namespace IGL.Common.Tests.Helpers
 
             var event1 = new GameEvent
             {
-                GameId = 342550,
+                GameId = 999999,
                 EventId = 100,   // identifies a level was completed                
                 Properties = properties
             };

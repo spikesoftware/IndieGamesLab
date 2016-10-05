@@ -8,11 +8,14 @@ namespace IGL.Data.Repositories
         
         public GamePacketRepository(int gameId) : base(string.Format("GamePacket{0:0000000000}", gameId), 101)
         {
-            AutoMapper.Mapper.CreateMap<GamePacket, ServiceEntities.GamePacketEntity>()
+            AutoMapper.Mapper.Initialize(cfg =>
+            {
+                cfg.CreateMap<GamePacket, ServiceEntities.GamePacketEntity>()
                 .ForMember(m => m.PartitionKey, s => s.MapFrom(g => g.Correlation))
                 .ForMember(m => m.RowKey, s => s.MapFrom(g => g.PacketNumber));
 
-            AutoMapper.Mapper.CreateMap<ServiceEntities.GamePacketEntity, GamePacket>();
+                cfg.CreateMap<ServiceEntities.GamePacketEntity, GamePacket>();
+            });
         }
 
         public AzureResult AddGamePacket(GamePacket packet)

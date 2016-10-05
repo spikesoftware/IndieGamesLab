@@ -29,7 +29,8 @@ namespace IGL.Service.Tasks
         /// <returns></returns>
         public async Task ProcessReceivedMessage(Task<IEnumerable<BrokeredMessage>> task)
         {
-            var hubIGL = ServiceBusMessagingFactory.GetIGLEventHubClient();            
+            var hubIGL = ServiceBusMessagingFactory.GetIGLEventHubClient();
+            int errors = 0;
 
             foreach (var message in task.Result)
             {
@@ -62,6 +63,7 @@ namespace IGL.Service.Tasks
                 }
                 catch (Exception ex)
                 {
+                    errors++;
                     message.DeadLetter(ex.Message, ex.GetFullMessage());
 
                     OnGamePacketError?.Invoke(null, new GamePacketErrorArgs
@@ -77,7 +79,7 @@ namespace IGL.Service.Tasks
                 }
             }
 
-            Trace.TraceInformation("IGL.Service.GameEventsListenerTask.ProcessReceivedMessage() completed");
+            Trace.TraceInformation(string.Format("IGL.Service.GameEventsListenerTask.ProcessReceivedMessage() processed {0} packets with {1} errors.", task.Result, errors));
         }
 
         private static EventData SuccessEvent()

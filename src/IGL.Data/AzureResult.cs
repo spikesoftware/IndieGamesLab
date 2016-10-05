@@ -25,6 +25,6 @@ namespace IGL.Data
         }
         public int Code { get; set; }
         public string Message { get; set; }
-        public List<T> ResultObject { get; set; }
+        public T ResultObject { get; set; }
     }
 }
