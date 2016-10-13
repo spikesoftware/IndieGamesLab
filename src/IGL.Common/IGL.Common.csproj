@@ -55,6 +55,7 @@
     <Compile Include="GamePacket.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="IGL.Common.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
