@@ -1,6 +1,4 @@
-﻿using IGL.Data;
-using IGL.Service.Common;
-using Microsoft.ServiceBus.Messaging;
+﻿using Microsoft.ServiceBus.Messaging;
 using System;
 using System.Diagnostics;
 using System.Threading;

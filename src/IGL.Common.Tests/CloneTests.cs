@@ -13,9 +13,7 @@ namespace IGL.Common.Tests
         {
             var event1 = SampleGenerator.GameEventTest1();
             var event2 = event1.CloneJson();
-            
-            Assert.AreEqual(event1.EventId, event2.EventId);
-            Assert.AreEqual(event1.GameId, event2.GameId);
+                        
             Assert.AreEqual(event1.Properties.Count, event2.Properties.Count);
             Assert.AreEqual(event1.Properties["stat_kill_creepy"], event2.Properties["stat_kill_creepy"]);
 

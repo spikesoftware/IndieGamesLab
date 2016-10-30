@@ -93,6 +93,7 @@
     <Compile Include="Repositories\GamePacketRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\RoleTaskRepository.cs" />
+    <Compile Include="RoleTaskDefinition.cs" />
     <Compile Include="ServiceBusMessagingFactory.cs" />
     <Compile Include="ServiceEntities\BaseTableEntity.cs" />
     <Compile Include="ServiceEntities\RoleTaskDefinitionEntity.cs" />
@@ -106,10 +107,6 @@
     <ProjectReference Include="..\IGL.Common\IGL.Common.csproj">
       <Project>{1a6675cd-6f94-4aa6-9b02-8c7514b543d6}</Project>
       <Name>IGL.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\IGL.Service.Common\IGL.Service.Common.csproj">
-      <Project>{f84949dd-4b34-488e-a52f-c8c43613acb2}</Project>
-      <Name>IGL.Service.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

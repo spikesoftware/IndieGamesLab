@@ -22,6 +22,9 @@ namespace IGL
         public string Correlation { get; set; }
 
         [DataMember]
+        public string PlayerId { get; set; }
+
+        [DataMember]
         public long PacketNumber { get; set; }
 
         [DataMember]
@@ -85,7 +88,7 @@ namespace IGL
          * http://stackoverflow.com/questions/202011/encrypt-and-decrypt-a-string
          ************************************/
 
-        private static byte[] _salt = Encoding.ASCII.GetBytes(ConfigurationManager.AppSettings["IGL.EncryptionSalt"]);
+        public static byte[] SALT = Encoding.ASCII.GetBytes("o6806642kbM7c5");
 
         /// <summary>
         /// Encrypt the given string using AES.  The string can be decrypted using 
@@ -104,7 +107,7 @@ namespace IGL
             try
             {
                 // generate the key from the shared secret and the salt
-                Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(Namespace, _salt);
+                Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(Namespace, SALT);
 
                 // Create a RijndaelManaged object
                 aesAlg = new RijndaelManaged();
@@ -163,7 +166,7 @@ namespace IGL
             try
             {
                 // generate the key from the shared secret and the salt
-                Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(Namespace, _salt);
+                Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(Namespace, SALT);
 
                 // Create the streams used for decryption.                
                 byte[] bytes = Convert.FromBase64String(cipherText);

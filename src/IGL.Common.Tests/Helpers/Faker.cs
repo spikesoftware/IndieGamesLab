@@ -8,8 +8,7 @@ namespace IGL.Common.Tests.Helpers
     {
         public static void FakeOut()
         {
-            var collection = new NameValueCollection();
-            collection.Add("IGL.EncryptionSalt", "o6806642kbM7c5");
+            var collection = new NameValueCollection();            
 
             System.Configuration.Fakes.ShimConfigurationManager.AppSettingsGet = () => collection;
         }

@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IGL.Service.Common
+namespace IGL.Data
 {
     public class RoleTaskDefinition
     {
-        public string Name { get; set; }        
+        public string Name { get; set; }
         public double Version { get; set; }
         public string QueueName { get; set; }
         public string Type { get; set; }

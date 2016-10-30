@@ -1,6 +1,4 @@
-﻿using IGL.Service.Common;
-using System;
-
+﻿
 namespace IGL.Data.ServiceEntities
 {
     public class RoleTaskDefinitionEntity : BaseTableEntity

@@ -22,10 +22,7 @@ namespace IGL.Common.Tests
 
                 // is the content encrypted
                 Assert.IsTrue(packet.Content.Contains("76561198024856042") == false);
-
-                Assert.AreEqual(event1.EventId, packet.GameEvent.EventId);
-                Assert.AreEqual(event1.GameId, packet.GameEvent.GameId);
-
+                
                 Assert.AreEqual(event1.Properties["stat_avg_level_1"], packet.GameEvent.Properties["stat_avg_level_1"]);
 #if !DO_NOT_FAKE
             }

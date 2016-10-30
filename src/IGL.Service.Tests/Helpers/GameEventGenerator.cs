@@ -18,9 +18,7 @@ namespace IGL.Service.Tests.Helpers
             //properties.Add("stat_average_level_speed", "330");    // the played elapsed time in seconds taking pause into considertion
             
             var event1 = new GameEvent
-            {
-                GameId = 999999,
-                EventId = 100,   // identifies a level was completed                
+            {                
                 Properties = properties
             };
 

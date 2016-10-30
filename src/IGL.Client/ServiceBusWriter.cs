@@ -8,8 +8,7 @@ namespace IGL.Client
 {
     public class ServiceBusWriter : ServiceBusBase
     {
-        internal static readonly string correlation = Guid.NewGuid().ToString().Replace("-", "");
-        public static int GameId = 0;
+        internal static readonly string correlation = Guid.NewGuid().ToString().Replace("-", "");        
         static int _packet = 0;
         
         private static readonly object _syncRoot = new Object();
@@ -21,8 +20,9 @@ namespace IGL.Client
             lock (_syncRoot)
             {
                 packet = new GamePacket
-                {
-                    GameId = GameId,
+                {                    
+                    GameId = Configuration.GameId,
+                    PlayerId = Configuration.PlayerId,
                     Correlation = correlation,
                     PacketNumber = _packet++,
                     PacketCreatedUTCDate = DateTime.UtcNow,                    
@@ -33,24 +33,27 @@ namespace IGL.Client
 
             var content = Encoding.Default.GetBytes(DatacontractSerializerHelper.Serialize<GamePacket>(packet));
 
-            WebClient webClient = new WebClient();
-            webClient.Headers[HttpRequestHeader.Authorization] = GetToken();
-            //if(!string.IsNullOrEmpty(sessionId))
-            //    webClient.Headers["SessionId"] = gameevent.BoardId;
+            using (WebClient webClient = new WebClient())
+            {
+                webClient.Headers[HttpRequestHeader.Authorization] = GetToken();
 
-            // add the properties
-            var collection = new NameValueCollection();
+                // add the properties
+                var collection = new NameValueCollection();
 
-            foreach (var property in properties)
-                collection.Add(property.Key, property.Value);
+                if (properties != null)
+                {
+                    foreach (var property in properties)
+                        collection.Add(property.Key, property.Value);
+                }
 
-            collection.Add(GamePacket.VERSION, GamePacket.Namespace);
+                collection.Add(GamePacket.VERSION, GamePacket.Namespace);
 
-            webClient.Headers.Add(collection);
+                webClient.Headers.Add(collection);
 
-            // Serialize the message
-            var response = webClient.UploadData(Configuration.GetServiceMessagesAddress(queueName), "POST", content);
-            string responseString = Encoding.UTF8.GetString(response);
+                // Serialize the message
+                var response = webClient.UploadData(Configuration.GetServiceMessagesAddress(queueName), "POST", content);
+                string responseString = Encoding.UTF8.GetString(response);
+            }
 
             return true;
         }        

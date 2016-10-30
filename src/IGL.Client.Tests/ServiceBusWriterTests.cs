@@ -19,7 +19,11 @@ namespace IGL.Client.Tests
         [TestMethod]
         public void SubmitGameEvents()
         {
-#if !DO_NOT_FAKE
+#if DO_NOT_FAKE
+            IGL.Client.Configuration.IssuerName = "[IssuerName]";
+            IGL.Client.Configuration.IssuerSecret = "[IssuerSecret]";
+            IGL.Client.Configuration.ServiceNamespace = "[ServiceNamespace]";
+#else
             using (Microsoft.QualityTools.Testing.Fakes.ShimsContext.Create())
             {
                 Faker.FakeOut();
@@ -36,8 +40,6 @@ namespace IGL.Client.Tests
 
                 var event1 = new GameEvent
                 {
-                    GameId = 999999,
-                    EventId = 100,
                     Properties = properties
                 };
 
@@ -63,6 +65,6 @@ namespace IGL.Client.Tests
         public void TestNamespace()
         {
             Assert.AreEqual("uri:igl:v1", GamePacket.Namespace);
-        }        
+        }
     }
 }

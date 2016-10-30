@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace IGL.Service.Common
+namespace IGL.Service
 {
     public interface IRoleTask
     {

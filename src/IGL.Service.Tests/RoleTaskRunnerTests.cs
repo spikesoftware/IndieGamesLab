@@ -2,9 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Reflection;
 using System.Linq;
-using IGL.Service.Tasks;
 using System.Threading;
-using IGL.Service.Common;
 using System.Threading.Tasks;
 using Microsoft.QualityTools.Testing.Fakes;
 using System.Collections.Specialized;
@@ -14,29 +12,19 @@ using Microsoft.WindowsAzure.Storage.Table.Fakes;
 using Microsoft.WindowsAzure.Storage.Queue.Fakes;
 using Microsoft.ServiceBus.Messaging.Fakes;
 using Microsoft.ServiceBus.Messaging;
+using IGL.Service.Tests.Helpers;
 
 namespace IGL.Service.Tests
 {
     [TestClass]
     public class RoleTaskRunnerTests
     {
-        [TestMethod]
-        public void GetTaskRunnersTest()
-        {            
-            var iType = typeof(IRoleTask);
-            var ass = Assembly.GetAssembly(typeof(RoleTaskRunner));
-
-            var runners = ass.GetTypes().Where(t => iType.IsAssignableFrom(t) && !t.IsInterface);
-
-            Assert.IsTrue(runners.Contains(typeof(GameEventsListenerTask)));
-            Assert.IsFalse(runners.Contains(typeof(IRoleTask)));
-
-        }
+        int _errors = 0;
+        int _success = 0;
 
         [TestMethod]
         public void AddTaskRunnerTest()
-        {
-            var queueName = "GameEvents";
+        {         
 #if !DO_NOT_FAKE
             using (Microsoft.QualityTools.Testing.Fakes.ShimsContext.Create())
             {
@@ -45,22 +33,21 @@ namespace IGL.Service.Tests
 
                 CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-                var runnerType = Type.GetType("IGL.Service.Tasks.GameEventsListenerTask, IGL.Service");
-
                 RoleTaskRunner.OnGamePacketCompleted += RoleTaskRunner_OnGamePacketCompleted;
                 RoleTaskRunner.OnListenerError += RoleTaskRunner_OnListenerError;
 
-                var runner = typeof(RoleTaskRunner).GetMethod("RunAsync")
-                            .MakeGenericMethod(runnerType)
-                            .Invoke(null, new object[] { cancellationTokenSource.Token, queueName, 1, new TimeSpan(0, 0, 5) });
+                var roleTask = new TestRoleTask();
+
+                var task = RoleTaskRunner.RunAsync<TestRoleTask>(cancellationTokenSource.Token, "test", 1, new TimeSpan(0, 0, 1));
+
+                task.Wait(3000);
 
                 cancellationTokenSource.Cancel();
 
-                var task = (Task)runner;
+                Thread.Sleep(500);
 
-                task.Wait();
-
-                var name = runner.GetType().ToString();
+            Assert.AreEqual(6, _errors);
+            Assert.AreEqual(50, _success);
 
 #if !DO_NOT_FAKE
             }
@@ -69,12 +56,12 @@ namespace IGL.Service.Tests
 
         private void RoleTaskRunner_OnListenerError(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            _errors++;
         }
 
         private void RoleTaskRunner_OnGamePacketCompleted(object sender, GamePacketArgs e)
         {
-            throw new NotImplementedException();
+            _success++;
         }
     }
 }

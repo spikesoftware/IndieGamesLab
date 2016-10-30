@@ -1,5 +1,4 @@
-﻿using IGL.Service.Common;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
 
 namespace IGL.Data.Repositories

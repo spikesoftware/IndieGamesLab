@@ -26,16 +26,17 @@ namespace IGL.Client
             values.Add("wrap_password", Configuration.IssuerSecret);
             values.Add("wrap_scope", realm);
 
-            WebClient webClient = new WebClient();
-            byte[] response = webClient.UploadValues(acsEndpoint, values);
+            using (WebClient webClient = new WebClient())
+            {
+                byte[] response = webClient.UploadValues(acsEndpoint, values);
 
-            string responseString = Encoding.UTF8.GetString(response);
+                string responseString = Encoding.UTF8.GetString(response);
 
-            var responseProperties = responseString.Split('&');
-            var tokenProperty = responseProperties[0].Split('=');
-            var token = Uri.UnescapeDataString(tokenProperty[1]);
-
-            return "WRAP access_token=\"" + token + "\"";
+                var responseProperties = responseString.Split('&');
+                var tokenProperty = responseProperties[0].Split('=');
+                var token = Uri.UnescapeDataString(tokenProperty[1]);
+                return "WRAP access_token=\"" + token + "\"";
+            }            
         }
 
         private static bool RemoteCertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)

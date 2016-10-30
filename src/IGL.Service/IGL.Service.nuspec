@@ -10,7 +10,7 @@
     <projectUrl>http://indiegameslab.com/</projectUrl>    
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Initial release containing GamePacket and GameBoard message definitions.</releaseNotes>
+    <releaseNotes>Initial release of IGL Service RoleTaskRunner</releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>C# Game IGL Azure Indie</tags>
   </metadata>

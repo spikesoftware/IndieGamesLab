@@ -14,17 +14,17 @@ namespace IGL.Client
     {
         static bool _shouldRun = false;
         static bool _isRunning = false;
-
-        public static string PlayerId;
+        
+        public static string Queue = "PlayerEvents";
 
         Thread _thread = null;
 
-        public static ManualResetEvent allDone = new ManualResetEvent(false);
+        static ManualResetEvent allDone = new ManualResetEvent(false);
         const int BUFFER_SIZE = 1024;
 
         public void StartListening()
         {
-            if (string.IsNullOrEmpty(PlayerId))
+            if (string.IsNullOrEmpty(Configuration.PlayerId))
                 throw new ApplicationException("ServiceBuslistener.StartListening() PlayerId must be set before listening for events.");
 
             _shouldRun = true;
@@ -52,12 +52,13 @@ namespace IGL.Client
         {
             _isRunning = true;
             
-            var address = new Uri(Configuration.GetServiceSubscriptionsAddress(Configuration.QUEUE_PLAYEREVENTS, PlayerId));
+            var address = new Uri(Configuration.GetServiceSubscriptionsAddress(Queue, Configuration.PlayerId));
             while (_shouldRun)
             {
                 try
                 {
                     WebRequest request = WebRequest.Create(address);
+
                     request.Headers[HttpRequestHeader.Authorization] = GetToken();
                     request.Method = "DELETE";
                     RequestState rs = new RequestState();
@@ -65,11 +66,17 @@ namespace IGL.Client
 
                     IAsyncResult r = request.BeginGetResponse(new AsyncCallback(RespCallback), rs);
 
-                    allDone.WaitOne();
+                    allDone.WaitOne();                    
                 }
-                catch(Exception ex)
+                catch (WebException ex)
                 {
-                    OnListenError?.Invoke(null, new ErrorEventArgs(ex));                    
+                    // if the server has not created a topic yet for the client then a 404 error will be returned so do not report
+                    if (!ex.Message.Contains("The remote server returned an error: (404) Not Found"))
+                        OnListenError?.Invoke(null, new ErrorEventArgs(ex));
+                }
+                catch (Exception ex)
+                {
+                    OnListenError?.Invoke(null, new ErrorEventArgs(ex));
                 }
             }
                         

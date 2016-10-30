@@ -7,10 +7,10 @@
     <authors>$author$</authors>
     <owners>$author$</owners>    
     <licenseUrl>https://github.com/spikesoftware/IndieGamesLab/blob/master/LICENSE</licenseUrl>
-    <projectUrl>https://github.com/spikesoftware/IndieGamesLab</projectUrl>        
+    <projectUrl>http://indiegameslab.com/</projectUrl>        
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Initial release containing GamePacket message definitions.</releaseNotes>
+    <releaseNotes>Initial release containing ServiceBusListener and ServiceBusWriter.</releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>C# Game IGL Azure Indie</tags>
   </metadata>

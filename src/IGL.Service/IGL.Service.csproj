@@ -71,6 +71,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.WebRequest" />
@@ -87,26 +88,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IRoleTask.cs" />
     <Compile Include="RoleTaskRunner.cs" />
-    <Compile Include="Tasks\GameEventDelegates.cs" />
-    <Compile Include="Tasks\GameEventsListenerTask.cs" />
+    <Compile Include="ServiceBusMessagingFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="IGL.Service.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IGL.Common\IGL.Common.csproj">
-      <Project>{1a6675cd-6f94-4aa6-9b02-8c7514b543d6}</Project>
+      <Project>{3ba5e8cc-004d-44a2-a525-b11a25502670}</Project>
       <Name>IGL.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\IGL.Data\IGL.Data.csproj">
-      <Project>{5733a81d-c41a-44bb-8f76-2e0f2e3f56c9}</Project>
-      <Name>IGL.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\IGL.Service.Common\IGL.Service.Common.csproj">
-      <Project>{f84949dd-4b34-488e-a52f-c8c43613acb2}</Project>
-      <Name>IGL.Service.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

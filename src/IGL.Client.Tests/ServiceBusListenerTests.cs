@@ -15,13 +15,20 @@ namespace IGL.Client.Tests
         [TestMethod]
         public void ReceiveGameEventsFromIndieGamesLab()
         {
-            #if !DO_NOT_FAKE
+#if DO_NOT_FAKE
+            IGL.Client.Configuration.IssuerName = "[IssuerName]";
+            IGL.Client.Configuration.IssuerSecret = "[IssuerSecret]";
+            IGL.Client.Configuration.ServiceNamespace = "[ServiceNamespace]";
+            Configuration.ServiceNamespace = "[ServiceNamespace]";
+#else
             using (Microsoft.QualityTools.Testing.Fakes.ShimsContext.Create())
             {
+                Configuration.ServiceNamespace = "avalidnamespace";
+
                 Faker.FakeOut();
             #endif
-
-                ServiceBusListener.PlayerId = "TestingTesting";
+                
+                IGL.Client.Configuration.PlayerId = "TestingTesting";
 
                 ServiceBusListener.OnGameEventReceived += ServiceBusListener_OnGameEventReceived;
                 ServiceBusListener.OnListenError += ServiceBusListener_OnListenError;
@@ -47,24 +54,37 @@ namespace IGL.Client.Tests
         [TestMethod]
         public void FailureTestCase()
         {
-            ServiceBusListener.PlayerId = "TestingTesting";
-            Configuration.ServiceNamespace = "testingtesting";
-
-            ServiceBusListener.OnGameEventReceived += ServiceBusListener_OnGameEventReceived;
-            ServiceBusListener.OnListenError += ServiceBusListener_OnListenError;
-
-            using (var sbl = new ServiceBusListener())
+            #if DO_NOT_FAKE
+            IGL.Client.Configuration.IssuerName = "[IssuerName]";
+            IGL.Client.Configuration.IssuerSecret = "[IssuerSecret]";
+            IGL.Client.Configuration.ServiceNamespace = "[ServiceNamespace]";
+            #else
+            using (Microsoft.QualityTools.Testing.Fakes.ShimsContext.Create())
             {
-                sbl.StartListening();
+                Faker.FakeOut();
+            #endif
 
-                Thread.CurrentThread.Join(5000);
+                IGL.Client.Configuration.PlayerId = "TestingTesting";
+                Configuration.ServiceNamespace = "testingtesting";
 
-                sbl.StopListening();
+                ServiceBusListener.OnGameEventReceived += ServiceBusListener_OnGameEventReceived;
+                ServiceBusListener.OnListenError += ServiceBusListener_OnListenError;
+
+                using (var sbl = new ServiceBusListener())
+                {
+                    sbl.StartListening();
+
+                    Thread.CurrentThread.Join(5000);
+
+                    sbl.StopListening();
+                }
+
+                var i = _packets.Count;
+
+                Assert.IsTrue(_failed);
+            #if !DO_NOT_FAKE
             }
-
-            var i = _packets.Count;
-
-            Assert.IsTrue(_failed);
+            #endif
         }
 
         List<GameEvent> _packets = new List<GameEvent>();

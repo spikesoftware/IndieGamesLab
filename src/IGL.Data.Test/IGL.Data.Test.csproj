@@ -133,10 +133,6 @@
       <Project>{5733a81d-c41a-44bb-8f76-2e0f2e3f56c9}</Project>
       <Name>IGL.Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\IGL.Service.Common\IGL.Service.Common.csproj">
-      <Project>{f84949dd-4b34-488e-a52f-c8c43613acb2}</Project>
-      <Name>IGL.Service.Common</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Fakes Include="Fakes\System.Configuration.fakes" />

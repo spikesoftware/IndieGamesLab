@@ -12,8 +12,7 @@ namespace IGL.Client.Tests.Helpers
     {
         public static void FakeOut()
         {
-            var collection = new NameValueCollection();
-            collection.Add("IGL.EncryptionSalt", "o6806642kbM7c5");
+            var collection = new NameValueCollection();            
             collection.Add("AzureStorageConnectionString", "AzureStorageConnectionString");
             collection.Add("IssuerName", "IssuerName");
             collection.Add("IssuerSecret", "IssuerSecret");
@@ -56,12 +55,11 @@ namespace IGL.Client.Tests.Helpers
             ShimWebRequest.CreateString = (uri) => shimWebRequest;
             ShimWebRequest.CreateUri = (uri) => shimWebRequest;
 
-            //requestShim.GetRequestStream = () => new MemoryStream();
-            //requestShim.GetResponse = () => responseShim.Instance;
-            // responseShim.GetResponseStream = () => new MemoryStream(Encoding.ASCII.GetBytes("Hello World"));
-
             ShimWebClient.AllInstances.UploadValuesStringNameValueCollection = (endpoint, values, b) =>
             {
+                if (values == "https://testingtesting-sb.accesscontrol.windows.net/WRAPv0.9/")
+                    throw new System.Exception("failed to reach the server...");
+
                 // put in a delay
                 Thread.CurrentThread.Join(20);
            

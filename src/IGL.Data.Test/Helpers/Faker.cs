@@ -1,6 +1,5 @@
 ﻿#if !DO_NOT_FAKE
 using IGL.Data.ServiceEntities;
-using IGL.Service.Common;
 using Microsoft.ServiceBus.Fakes;
 using Microsoft.ServiceBus.Messaging;
 using Microsoft.ServiceBus.Messaging.Fakes;
