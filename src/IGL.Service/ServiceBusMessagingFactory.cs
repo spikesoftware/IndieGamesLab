@@ -25,9 +25,9 @@ namespace IGL.Service
         {
             var namespaceManager = NamespaceManager.CreateFromConnectionString(ConnectionString);
 
-            if (!namespaceManager.QueueExists(topic))
+            if (!namespaceManager.TopicExists(topic))
             {
-                namespaceManager.CreateQueue(topic);
+                namespaceManager.CreateTopic(topic);
             }
 
             return TopicClient.CreateFromConnectionString(ConnectionString, topic);
