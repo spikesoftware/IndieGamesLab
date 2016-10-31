@@ -23,8 +23,6 @@ namespace IGL.Service.Tests.Helpers
                 {
                     packet = message.GetBody<GamePacket>(new DataContractSerializer(typeof(GamePacket)));
 
-                    await message.CompleteAsync();
-
                     OnGamePacketCompleted(this, new GamePacketArgs() { GamePacket = packet });
                 }
                 catch (Exception ex)

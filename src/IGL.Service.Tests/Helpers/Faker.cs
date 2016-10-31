@@ -63,35 +63,70 @@ namespace IGL.Service.Tests.Helpers
 
             var queueClient = QueueClient.CreateFromConnectionString("Endpoint=sb://fake.net/;", "GameEvents");
 
+            var goodMessage = new ShimBrokeredMessage()
+            {
+                CompleteAsync = () => null                
+            };
+
+            ShimBrokeredMessage.AllInstances.GetBodyOf1XmlObjectSerializer<GamePacket>((x, ser) => new GamePacket() { EventId = 2 });
+
             ShimQueueClient.CreateFromConnectionStringStringString = (connectionstring, table) =>
             {
                 return new ShimQueueClient(queueClient)
                 {
                     ReceiveBatchAsyncInt32TimeSpan = (size, waitTime) =>
                     {
-                        return new System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<BrokeredMessage>>(GetMessages);
-                    }
+                        var msgs = new List<BrokeredMessage>();
+
+                        switch (m)
+                        {
+                            case 0:
+                                m++;
+
+                                // return 10 good messages
+                                for (int i = 0; i < 10; i++)
+                                    msgs.Add(goodMessage);
+
+                                return Task.FromResult<System.Collections.Generic.IEnumerable<BrokeredMessage>>(msgs);
+                            case 1:
+                                m++;
+
+                                // return 20 good messages and 1 bad
+                                for (int i = 0; i < 20; i++)
+                                    msgs.Add(goodMessage);
+
+                                msgs.Add(null);
+
+                                return Task.FromResult<System.Collections.Generic.IEnumerable<BrokeredMessage>>(msgs);                                
+                            case 2: // no activity
+                            case 3: // no activity
+                            case 4: // no activity
+                            default:
+                                m++;
+                                Thread.Sleep(30);
+                                return Task.FromResult<System.Collections.Generic.IEnumerable<BrokeredMessage>>(new List<BrokeredMessage>());
+                            case 5:
+                                m++;
+
+                                // return 20 good messages and 5 bad
+                                msgs.Add(null);
+                                msgs.Add(null);
+                                msgs.Add(null);
+
+                                for (int i = 0; i < 20; i++)
+                                    msgs.Add(goodMessage);
+
+                                msgs.Add(null);
+                                msgs.Add(null);                                
+
+                                return Task.FromResult<System.Collections.Generic.IEnumerable<BrokeredMessage>>(msgs);
+                        }
+                    }                    
                 };
             };
         }
 
         static int m = 0;
-
-        static IEnumerable<BrokeredMessage> GetMessages()
-        {
-            // first call
-            switch(m)
-            {
-                case 0: m++;
-                        return new List<BrokeredMessage> { new BrokeredMessage(), new BrokeredMessage() };
-                case 1:
-                    m++;
-                    return new List<BrokeredMessage> { new BrokeredMessage(), new BrokeredMessage() };
-                default:
-                    Thread.Sleep(30);
-                    return new List<BrokeredMessage>();
-            }
-        }
     }
 }
 #endif
