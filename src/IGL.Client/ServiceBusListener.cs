@@ -7,20 +7,12 @@ using System.Threading;
 namespace IGL.Client
 {
 
-    /// <summary>
-    /// ServiceBusListener will poll for events from the IGL services
-    /// </summary>
-    public class ServiceBusListener : ServiceBusBase, IDisposable
+    public class ServiceBusListenerThread : IDisposable
     {
         static bool _shouldRun = false;
-        static bool _isRunning = false;
-        
-        public static string Queue = "PlayerEvents";
+        static bool _isRunning = false;        
 
         Thread _thread = null;
-
-        static ManualResetEvent allDone = new ManualResetEvent(false);
-        const int BUFFER_SIZE = 1024;
 
         public void StartListening()
         {
@@ -29,7 +21,7 @@ namespace IGL.Client
 
             _shouldRun = true;
 
-            _thread = new Thread(new ThreadStart(ServiceBusListenerThread));
+            _thread = new Thread(new ThreadStart(ListenForMessages));
             _thread.Start();
         }
 
@@ -37,36 +29,23 @@ namespace IGL.Client
         {
             _shouldRun = false;
         }
-
-        /// <summary>
-        /// Event called when a GameEvent has been successfully received.
-        /// </summary>
-        public static event EventHandler<GamePacketArgs> OnGameEventReceived;
+        
         public static event EventHandler<ErrorEventArgs> OnListenError;
 
         /// <summary>
         /// receive an event targeted to this particular player
         /// </summary>
         /// <param name="post"></param>
-        static void ServiceBusListenerThread() 
+        static void ListenForMessages()
         {
             _isRunning = true;
+            var listener = new ServiceBusListener();
             
-            var address = new Uri(Configuration.GetServiceSubscriptionsAddress(Queue, Configuration.PlayerId));
             while (_shouldRun)
             {
                 try
                 {
-                    WebRequest request = WebRequest.Create(address);
-
-                    request.Headers[HttpRequestHeader.Authorization] = GetToken();
-                    request.Method = "DELETE";
-                    RequestState rs = new RequestState();
-                    rs.Request = request;
-
-                    IAsyncResult r = request.BeginGetResponse(new AsyncCallback(RespCallback), rs);
-
-                    allDone.WaitOne();                    
+                    listener.ListenForMessages();                    
                 }
                 catch (WebException ex)
                 {
@@ -79,8 +58,75 @@ namespace IGL.Client
                     OnListenError?.Invoke(null, new ErrorEventArgs(ex));
                 }
             }
-                        
+
             _isRunning = false;
+        }        
+
+        public void Dispose()
+        {
+            // close down the listening
+            _shouldRun = false;
+
+            while (_isRunning)
+            {
+                Thread.Sleep(200);
+            }
+        }
+    }
+
+    /// <summary>
+    /// ServiceBusListener will listen for events from the IGL services
+    /// </summary>
+    public class ServiceBusListener : ServiceBusBase
+    {            
+        bool _isRunning = false; 
+        
+        public static string Queue = "PlayerEvents";
+
+        static ManualResetEvent allDone = new ManualResetEvent(false);
+        const int BUFFER_SIZE = 1024;
+
+        /// <summary>
+        /// Event called when a GameEvent has been successfully received.
+        /// </summary>
+        public static event EventHandler<GamePacketArgs> OnGameEventReceived;
+        public static event EventHandler<ErrorEventArgs> OnListenError;
+
+        public void ListenForMessages()
+        {
+            if (Token == null)
+                return;
+
+            if (_isRunning)
+                return;
+
+            _isRunning = true;            
+
+            var address = new Uri(string.Format("https://indiegameslab.servicebus.windows.net/playerevents/subscriptions/TestingTesting/messages/head?timeout=60"));
+            try
+            {
+                WebRequest request = WebRequest.Create(address);
+
+                request.Headers[HttpRequestHeader.Authorization] = Token;
+                request.Method = "DELETE";
+                RequestState rs = new RequestState();
+                rs.Request = request;
+                request.Timeout = 5000;  // should get a response in 5 seconds
+
+                IAsyncResult r = request.BeginGetResponse(new AsyncCallback(RespCallback), rs);
+            }
+            catch (WebException ex)
+            {                
+                // if the server has not created a topic yet for the client then a 404 error will be returned so do not report
+                if (!ex.Message.Contains("The remote server returned an error: (404) Not Found"))
+                    if (OnListenError != null)
+                        OnListenError(this, new System.IO.ErrorEventArgs(ex));
+            }
+            catch (Exception ex)
+            {             
+                if (OnListenError != null)
+                    OnListenError(this, new System.IO.ErrorEventArgs(ex));
+            }
         }
 
         private static void RespCallback(IAsyncResult ar)
@@ -148,8 +194,6 @@ namespace IGL.Client
                     IAsyncResult ar = responseStream.BeginRead(
                        rs.BufferRead, 0, BUFFER_SIZE,
                        new AsyncCallback(ReadCallBack), rs);
-
-                    HandlePacket(str);
                 }
                 else
                 {
@@ -178,17 +222,6 @@ namespace IGL.Client
             if (packet != null)
             {
                 OnGameEventReceived?.Invoke(null, new GamePacketArgs { GamePacket = packet });
-            }
-        }
-
-        public void Dispose()
-        {
-            // close down the listening
-            _shouldRun = false;
-
-            while(_isRunning)
-            {
-                Thread.Sleep(200);
             }
         }
     }        

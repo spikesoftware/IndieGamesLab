@@ -33,7 +33,7 @@ namespace IGL.Client.Tests
                 ServiceBusListener.OnGameEventReceived += ServiceBusListener_OnGameEventReceived;
                 ServiceBusListener.OnListenError += ServiceBusListener_OnListenError;
 
-                using(var sbl = new ServiceBusListener())
+                using(var sbl = new ServiceBusListenerThread())
                 {
                     sbl.StartListening();
 
@@ -70,7 +70,7 @@ namespace IGL.Client.Tests
                 ServiceBusListener.OnGameEventReceived += ServiceBusListener_OnGameEventReceived;
                 ServiceBusListener.OnListenError += ServiceBusListener_OnListenError;
 
-                using (var sbl = new ServiceBusListener())
+                using (var sbl = new ServiceBusListenerThread())
                 {
                     sbl.StartListening();
 

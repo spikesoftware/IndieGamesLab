@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -11,7 +12,25 @@ namespace IGL.Client
 {
     public abstract class ServiceBusBase
     {
-        protected static string GetToken()
+        static string _token;
+        static DateTime _tokenExpiresOn;
+
+        public static string Token
+        {
+            get
+            {
+                if (_token == null || _tokenExpiresOn < DateTime.UtcNow)
+                {
+                    // reset token in the case of expiry
+                    _token = null;
+                    GetToken();
+                }
+
+                return _token;
+            }
+        }
+
+        private static void GetToken()
         {
             ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
 
@@ -26,17 +45,30 @@ namespace IGL.Client
             values.Add("wrap_password", Configuration.IssuerSecret);
             values.Add("wrap_scope", realm);
 
-            using (WebClient webClient = new WebClient())
-            {
-                byte[] response = webClient.UploadValues(acsEndpoint, values);
+using (WebClient webClient = new WebClient())
+{
+    webClient.UploadValuesCompleted += WebClient_UploadValuesCompleted; ;
+    webClient.UploadValuesAsync(new Uri(acsEndpoint), values);                
+}            
+        }
 
-                string responseString = Encoding.UTF8.GetString(response);
+        private static void WebClient_UploadValuesCompleted(object sender, UploadValuesCompletedEventArgs e)
+        {
+            string responseString = Encoding.UTF8.GetString(e.Result);
 
-                var responseProperties = responseString.Split('&');
-                var tokenProperty = responseProperties[0].Split('=');
-                var token = Uri.UnescapeDataString(tokenProperty[1]);
-                return "WRAP access_token=\"" + token + "\"";
-            }            
+            var responseProperties = responseString.Split('&');
+            var tokenProperty = responseProperties[0].Split('=');
+            var token = Uri.UnescapeDataString(tokenProperty[1]);
+
+            var properties = (from prop in token.Split('&')
+                              let pair = prop.Split(new[] { '=' }, 2)
+                              select new { Name = pair[0], Value = pair[1] })
+                              .ToDictionary(p => p.Name, p => p.Value);
+
+            var epochStart = new DateTime(1970, 01, 01, 0, 0, 0, 0, DateTimeKind.Utc);
+
+            _tokenExpiresOn = epochStart.AddSeconds(int.Parse(properties["ExpiresOn"]));
+            _token = "WRAP access_token=\"" + token + "\"";
         }
 
         private static bool RemoteCertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)

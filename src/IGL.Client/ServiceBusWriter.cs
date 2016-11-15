@@ -35,7 +35,7 @@ namespace IGL.Client
 
             using (WebClient webClient = new WebClient())
             {
-                webClient.Headers[HttpRequestHeader.Authorization] = GetToken();
+                webClient.Headers[HttpRequestHeader.Authorization] = Token;
 
                 // add the properties
                 var collection = new NameValueCollection();
