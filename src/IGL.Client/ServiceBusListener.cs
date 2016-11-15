@@ -78,8 +78,8 @@ namespace IGL.Client
     /// ServiceBusListener will listen for events from the IGL services
     /// </summary>
     public class ServiceBusListener : ServiceBusBase
-    {            
-        bool _isRunning = false; 
+    {
+        IAsyncResult _isRunning; 
         
         public static string Queue = "PlayerEvents";
 
@@ -97,12 +97,10 @@ namespace IGL.Client
             if (Token == null)
                 return;
 
-            if (_isRunning)
+            if (_isRunning != null && !_isRunning.IsCompleted)
                 return;
 
-            _isRunning = true;            
-
-            var address = new Uri(string.Format("https://indiegameslab.servicebus.windows.net/playerevents/subscriptions/TestingTesting/messages/head?timeout=60"));
+            var address = new Uri(Configuration.GetServiceSubscriptionsAddress(Queue, Configuration.PlayerId));
             try
             {
                 WebRequest request = WebRequest.Create(address);
@@ -110,22 +108,21 @@ namespace IGL.Client
                 request.Headers[HttpRequestHeader.Authorization] = Token;
                 request.Method = "DELETE";
                 RequestState rs = new RequestState();
-                rs.Request = request;
-                request.Timeout = 5000;  // should get a response in 5 seconds
+                rs.Request = request;                
 
-                IAsyncResult r = request.BeginGetResponse(new AsyncCallback(RespCallback), rs);
+                _isRunning = request.BeginGetResponse(new AsyncCallback(RespCallback), rs);
             }
             catch (WebException ex)
             {                
                 // if the server has not created a topic yet for the client then a 404 error will be returned so do not report
                 if (!ex.Message.Contains("The remote server returned an error: (404) Not Found"))
                     if (OnListenError != null)
-                        OnListenError(this, new System.IO.ErrorEventArgs(ex));
+                        OnListenError?.Invoke(this, new System.IO.ErrorEventArgs(ex));
             }
             catch (Exception ex)
             {             
                 if (OnListenError != null)
-                    OnListenError(this, new System.IO.ErrorEventArgs(ex));
+                    OnListenError?.Invoke(this, new System.IO.ErrorEventArgs(ex));
             }
         }
 

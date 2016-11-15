@@ -15,6 +15,9 @@ namespace IGL.Client
 
         public static bool SubmitGameEvent(string queueName, int eventId, GameEvent gameevent, KeyValuePair<string, string>[] properties = null, string sessionId = null)
         {
+            if (Token == null)
+                return false;
+
             GamePacket packet;
 
             lock (_syncRoot)
