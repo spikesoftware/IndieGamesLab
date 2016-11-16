@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
 using System.Net;
 using System.Text;
 
@@ -12,6 +13,9 @@ namespace IGL.Client
         static int _packet = 0;
         
         private static readonly object _syncRoot = new Object();
+
+        public static event EventHandler<ErrorEventArgs> OnSubmitError;
+        public static event EventHandler OnSubmitSuccess;
 
         public static bool SubmitGameEvent(string queueName, int eventId, GameEvent gameevent, KeyValuePair<string, string>[] properties = null, string sessionId = null)
         {
@@ -53,12 +57,26 @@ namespace IGL.Client
 
                 webClient.Headers.Add(collection);
 
-                // Serialize the message
-                var response = webClient.UploadData(Configuration.GetServiceMessagesAddress(queueName), "POST", content);
-                string responseString = Encoding.UTF8.GetString(response);
+                webClient.UploadDataCompleted += WebClient_UploadDataCompleted;
+                webClient.UploadDataAsync(new Uri(Configuration.GetServiceMessagesAddress(queueName)), "POST", content);                
             }
 
             return true;
-        }        
+        }
+
+        private static void WebClient_UploadDataCompleted(object sender, UploadDataCompletedEventArgs e)
+        {
+            try
+            {
+                string responseString = Encoding.UTF8.GetString(e.Result);
+
+                OnSubmitSuccess?.Invoke(sender, new EventArgs());
+            }
+            catch(Exception ex)
+            {
+                OnSubmitError?.Invoke(sender, new System.IO.ErrorEventArgs(ex));
+            }
+
+        }
     }
 }
