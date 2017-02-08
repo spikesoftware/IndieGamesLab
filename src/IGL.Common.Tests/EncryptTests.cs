@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using IGL.Common.Tests.Helpers;
 using System.Collections.Specialized;
+using System.Diagnostics;
 
 namespace IGL.Common.Tests
 {
@@ -22,11 +23,30 @@ namespace IGL.Common.Tests
 
                 // is the content encrypted
                 Assert.IsTrue(packet.Content.Contains("76561198024856042") == false);
-                
+
                 Assert.AreEqual(event1.Properties["stat_avg_level_1"], packet.GameEvent.Properties["stat_avg_level_1"]);
 #if !DO_NOT_FAKE
             }
 #endif
+        }
+
+
+        [TestMethod]
+        public void EncryptionTests()
+        {
+            var sw = new Stopwatch();
+            sw.Start();
+            var value = SampleGenerator.GameEventTestLarge();
+            var p1 = sw.ElapsedMilliseconds;
+            var serialised = JsonSerializerHelper.Serialize(value);
+            var p2 = sw.ElapsedMilliseconds;
+            var encrypted = GamePacket.EncryptStringAES(serialised);
+            var p3 = sw.ElapsedMilliseconds;
+
+            var dSerialisation = p2 - p1;
+            var dEncryption = p3 - p2;
+
+
         }
     }
 }

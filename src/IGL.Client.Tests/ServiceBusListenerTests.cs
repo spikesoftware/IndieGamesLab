@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 using System.Collections.Generic;
 using IGL.Client.Tests.Helpers;
+using IGL.Configuration;
 
 namespace IGL.Client.Tests
 {
@@ -16,19 +17,23 @@ namespace IGL.Client.Tests
         public void ReceiveGameEventsFromIndieGamesLab()
         {
 #if DO_NOT_FAKE
-            IGL.Client.Configuration.IssuerName = "[IssuerName]";
-            IGL.Client.Configuration.IssuerSecret = "[IssuerSecret]";
-            IGL.Client.Configuration.ServiceNamespace = "[ServiceNamespace]";
-            Configuration.ServiceNamespace = "[ServiceNamespace]";
+            CommonConfiguration.Instance.BackboneConfiguration.IssuerName = "[IssuerName]";
+            CommonConfiguration.Instance.BackboneConfiguration.IssuerSecret = "[IssuerSecret]";
+            CommonConfiguration.Instance.BackboneConfiguration.ServiceNamespace = "[ServiceNamespace]";            
+            {
+#elif USE_IGL_BACKBONE
+            CommonConfiguration.Instance.BackboneConfiguration.IssuerName = "IGLGuestClient";
+            CommonConfiguration.Instance.BackboneConfiguration.IssuerSecret = "2PenhRgdmlf6F1oNglk9Wra1FRH31pcOwbB3q4X0vDs=";
+            CommonConfiguration.Instance.BackboneConfiguration.ServiceNamespace = "indiegameslab";
+            { 
 #else
             using (Microsoft.QualityTools.Testing.Fakes.ShimsContext.Create())
             {
                 Configuration.ServiceNamespace = "avalidnamespace";
 
                 Faker.FakeOut();
-            #endif
-                
-                IGL.Client.Configuration.PlayerId = "TestingTesting";
+#endif                
+                CommonConfiguration.Instance.PlayerId = "TestingTesting";
 
                 ServiceBusListener.OnGameEventReceived += ServiceBusListener_OnGameEventReceived;
                 ServiceBusListener.OnListenError += ServiceBusListener_OnListenError;
@@ -45,27 +50,30 @@ namespace IGL.Client.Tests
                 var i = _packets.Count;
 
                 Assert.IsFalse(_failed);
-            #if !DO_NOT_FAKE
             }
-            #endif
-
         }
 
         [TestMethod]
         public void FailureTestCase()
         {
-            #if DO_NOT_FAKE
-            IGL.Client.Configuration.IssuerName = "[IssuerName]";
-            IGL.Client.Configuration.IssuerSecret = "[IssuerSecret]";
-            IGL.Client.Configuration.ServiceNamespace = "[ServiceNamespace]";
-            #else
-            using (Microsoft.QualityTools.Testing.Fakes.ShimsContext.Create())
+#if DO_NOT_FAKE
+            CommonConfiguration.Instance.BackboneConfiguration.IssuerName = "[IssuerName]";
+            CommonConfiguration.Instance.BackboneConfiguration.IssuerSecret = "[IssuerSecret]";
+            CommonConfiguration.Instance.BackboneConfiguration.ServiceNamespace = "[ServiceNamespace]";            
+            {
+#elif USE_IGL_BACKBONE
+            CommonConfiguration.Instance.BackboneConfiguration.IssuerName = "IGLGuestClient";
+            CommonConfiguration.Instance.BackboneConfiguration.IssuerSecret = "2PenhRgdmlf6F1oNglk9Wra1FRH31pcOwbB3q4X0vDs=";
+            CommonConfiguration.Instance.BackboneConfiguration.ServiceNamespace = "indiegameslab";
+            {
+#else
+                using (Microsoft.QualityTools.Testing.Fakes.ShimsContext.Create())
             {
                 Faker.FakeOut();
             #endif
 
-                IGL.Client.Configuration.PlayerId = "TestingTesting";
-                Configuration.ServiceNamespace = "testingtesting";
+                CommonConfiguration.Instance.PlayerId = "TestingTesting";
+                CommonConfiguration.Instance.BackboneConfiguration.ServiceNamespace = "testingtesting";
 
                 ServiceBusListener.OnGameEventReceived += ServiceBusListener_OnGameEventReceived;
                 ServiceBusListener.OnListenError += ServiceBusListener_OnListenError;
@@ -82,9 +90,7 @@ namespace IGL.Client.Tests
                 var i = _packets.Count;
 
                 Assert.IsTrue(_failed);
-            #if !DO_NOT_FAKE
             }
-            #endif
         }
 
         List<GameEvent> _packets = new List<GameEvent>();

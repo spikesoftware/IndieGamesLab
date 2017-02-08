@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IGL.Configuration;
+using System;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -16,7 +17,7 @@ namespace IGL.Client
 
         public void StartListening()
         {
-            if (string.IsNullOrEmpty(Configuration.PlayerId))
+            if (string.IsNullOrEmpty(CommonConfiguration.Instance.PlayerId))
                 throw new ApplicationException("ServiceBuslistener.StartListening() PlayerId must be set before listening for events.");
 
             _shouldRun = true;
@@ -100,7 +101,7 @@ namespace IGL.Client
             if (_isRunning != null && !_isRunning.IsCompleted)
                 return;
 
-            var address = new Uri(Configuration.GetServiceSubscriptionsAddress(Queue, Configuration.PlayerId));
+            var address = new Uri(CommonConfiguration.Instance.BackboneConfiguration.GetServiceSubscriptionsAddress(Queue, CommonConfiguration.Instance.PlayerId));
             try
             {
                 WebRequest request = WebRequest.Create(address);

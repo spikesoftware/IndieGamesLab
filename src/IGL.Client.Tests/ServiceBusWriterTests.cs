@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 using System.Linq;
 using IGL.Client.Tests.Helpers;
+using System.Threading;
+using IGL.Configuration;
 
 namespace IGL.Client.Tests
 {
@@ -13,16 +15,22 @@ namespace IGL.Client.Tests
         [TestInitialize]
         public void Init()
         {
-            Configuration.ServiceNamespace = "indiegameslab";
+            CommonConfiguration.Instance.BackboneConfiguration.ServiceNamespace = "indiegameslab";
         }
 
         [TestMethod]
         public void SubmitGameEvents()
         {
 #if DO_NOT_FAKE
-            IGL.Client.Configuration.IssuerName = "[IssuerName]";
-            IGL.Client.Configuration.IssuerSecret = "[IssuerSecret]";
-            IGL.Client.Configuration.ServiceNamespace = "[ServiceNamespace]";
+            CommonConfiguration.Instance.BackboneConfiguration.IssuerName = "[IssuerName]";
+            CommonConfiguration.Instance.BackboneConfiguration.IssuerSecret = "[IssuerSecret]";
+            CommonConfiguration.Instance.BackboneConfiguration.ServiceNamespace = "[ServiceNamespace]";            
+            {
+#elif USE_IGL_BACKBONE
+            CommonConfiguration.Instance.BackboneConfiguration.IssuerName = "IGLGuestClient";
+            CommonConfiguration.Instance.BackboneConfiguration.IssuerSecret = "2PenhRgdmlf6F1oNglk9Wra1FRH31pcOwbB3q4X0vDs=";
+            CommonConfiguration.Instance.BackboneConfiguration.ServiceNamespace = "indiegameslab";
+            {
 #else
             using (Microsoft.QualityTools.Testing.Fakes.ShimsContext.Create())
             {
@@ -49,16 +57,18 @@ namespace IGL.Client.Tests
                 additional.Add("EVENT_DATE", DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss"));
                 additional.Add("SESSION_ID", Guid.NewGuid().ToString());
 
+                // retrieve security token
+                var token = ServiceBusWriter.Token;
+
+                while (token == null)
+                {
+                    Thread.Sleep(30);
+                    token = ServiceBusWriter.Token;
+                }                
+
                 for (int i = 0; i < 10; i++)
                     Assert.IsTrue(ServiceBusWriter.SubmitGameEvent("gameevents", 100, event1, additional.ToArray()));
-#if !DO_NOT_FAKE
             }
-#endif
-        }
-
-        private string GetWebData(string v)
-        {
-            throw new NotImplementedException();
         }
 
         [TestMethod]

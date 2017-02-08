@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IGL.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -28,8 +29,8 @@ namespace IGL.Client
             {
                 packet = new GamePacket
                 {                    
-                    GameId = Configuration.GameId,
-                    PlayerId = Configuration.PlayerId,
+                    GameId = CommonConfiguration.Instance.GameId,
+                    PlayerId = CommonConfiguration.Instance.PlayerId,
                     Correlation = correlation,
                     PacketNumber = _packet++,
                     PacketCreatedUTCDate = DateTime.UtcNow,                    
@@ -58,7 +59,7 @@ namespace IGL.Client
                 webClient.Headers.Add(collection);
 
                 webClient.UploadDataCompleted += WebClient_UploadDataCompleted;
-                webClient.UploadDataAsync(new Uri(Configuration.GetServiceMessagesAddress(queueName)), "POST", content);                
+                webClient.UploadDataAsync(new Uri(CommonConfiguration.Instance.BackboneConfiguration.GetServiceMessagesAddress(queueName)), "POST", content);                
             }
 
             return true;

@@ -36,8 +36,24 @@ namespace IGL.Common.Tests.Helpers
 
             return event1;
         }
+        public static GameEvent GameEventTestLarge()
+        {
+            Dictionary<string, string> properties = new Dictionary<string, string>();
 
-        
+            for (int i = 0; i < 300; i++)
+            {
+                properties.Add("stat_" + i.ToString(), new string('x', 500));
+            }
+
+            var event1 = new GameEvent
+            {
+                Properties = properties
+            };
+
+            return event1;
+        }
+
+
     }
 
     internal class Dummy

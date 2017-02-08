@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IGL.Configuration;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -34,15 +35,15 @@ namespace IGL.Client
         {
             ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
 
-            var acsEndpoint = "https://" + Configuration.ServiceNamespace + "-sb." + Configuration.ACSHostName + "/WRAPv0.9/";
+            var acsEndpoint = CommonConfiguration.Instance.BackboneConfiguration.GetACSEndpoint();
 
             // Note that the realm used when requesting a token uses the HTTP scheme, even though
             // calls to the service are always issued over HTTPS
-            var realm = "http://" + Configuration.ServiceNamespace + "." + Configuration.SBHostName + "/";
+            var realm = CommonConfiguration.Instance.BackboneConfiguration.GetRealm();
 
             NameValueCollection values = new NameValueCollection();
-            values.Add("wrap_name", Configuration.IssuerName);
-            values.Add("wrap_password", Configuration.IssuerSecret);
+            values.Add("wrap_name", CommonConfiguration.Instance.BackboneConfiguration.IssuerName);
+            values.Add("wrap_password", CommonConfiguration.Instance.BackboneConfiguration.IssuerSecret);
             values.Add("wrap_scope", realm);
 
 using (WebClient webClient = new WebClient())
