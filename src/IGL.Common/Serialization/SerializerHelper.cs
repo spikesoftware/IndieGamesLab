@@ -1,4 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.IO;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Web.Script.Serialization;
@@ -34,7 +38,8 @@ namespace IGL
             {
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
-                    DataContractSerializer serializer = new DataContractSerializer(typeof(T));
+                    List<Type> knownTypes = new List<Type> { typeof(List<string>), typeof(NameValueCollection) };
+                    DataContractSerializer serializer = new DataContractSerializer(typeof(T), knownTypes);
                     serializer.WriteObject(memoryStream, item);
                     return Encoding.UTF8.GetString(memoryStream.ToArray());
                 }
@@ -102,5 +107,49 @@ namespace IGL
             return default(T);
         }
 
+    }
+
+    public static class GameEventSerializer
+    {
+        public static string Serialize(GameEvent item)
+        {
+            byte[] bytes;
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                BinaryWriter writer = new BinaryWriter(stream);
+
+                writer.Write(item.Properties.Count);
+
+                foreach(var property in item.Properties)
+                {
+                    writer.Write(property.Key);
+                    writer.Write(property.Value);
+                }
+
+                bytes = stream.ToArray();
+            }
+
+            // convert to string
+            return new SoapHexBinary(bytes).ToString();
+        }
+        public static GameEvent Deserialize(string content)
+        {
+            var bytes = SoapHexBinary.Parse(content).Value;
+
+            var gameEvent = new GameEvent { Properties = new Dictionary<string, string>() };
+
+            using (BinaryReader reader = new BinaryReader(new MemoryStream(bytes)))
+            {
+                var numProperties = reader.ReadInt32();
+
+                for(int index=0; index < numProperties; index++)
+                {
+                    gameEvent.Properties.Add(reader.ReadString(), reader.ReadString());
+                }                   
+            }
+
+            return gameEvent;
+        }
     }
 }

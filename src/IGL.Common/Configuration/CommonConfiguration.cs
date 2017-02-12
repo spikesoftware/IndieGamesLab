@@ -35,8 +35,10 @@ namespace IGL.Configuration
                     }
                     catch (Exception ex)
                     {
-                        // TODO: logging
-                        System.Diagnostics.Trace.TraceError(ex.Message);                        
+                        using (var logger = new IGL.Logging.Logger())
+                        {
+                            logger.LogError(ex.Message);
+                        }
                     }
 
                     // supply a default

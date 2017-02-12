@@ -11,6 +11,9 @@ namespace IGL.Common.Tests
         [TestMethod]
         public void GameEventEncryptionTest()
         {
+            IGL.Configuration.CommonConfiguration.Instance.EncryptionConfiguration.IsEncryptionEnabled = true;
+            IGL.Configuration.CommonConfiguration.Instance.EncryptionConfiguration.Salt = "o6806642kbM7c5";
+
 #if !DO_NOT_FAKE
             using (Microsoft.QualityTools.Testing.Fakes.ShimsContext.Create())
             {
@@ -34,6 +37,9 @@ namespace IGL.Common.Tests
         [TestMethod]
         public void EncryptionTests()
         {
+            IGL.Configuration.CommonConfiguration.Instance.EncryptionConfiguration.IsEncryptionEnabled = true;
+            IGL.Configuration.CommonConfiguration.Instance.EncryptionConfiguration.Salt = "o6806642kbM7c5";
+
             var sw = new Stopwatch();
             sw.Start();
             var value = SampleGenerator.GameEventTestLarge();

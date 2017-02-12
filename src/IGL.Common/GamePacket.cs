@@ -1,4 +1,7 @@
-﻿using System;
+﻿using IGL.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
@@ -12,6 +15,7 @@ namespace IGL
     [DataContract(Namespace = "uri:igl:v1")]
     public class GamePacket
     {
+        public string Queue { get; set; }
         /// <summary>
         /// The IndieGamesLab Game ID
         /// </summary>
@@ -66,6 +70,9 @@ namespace IGL
             }
         }
 
+        [DataMember]
+        public Dictionary<string, string> Properties { get; set; }
+
         public GameEvent GameEvent
         {
             get
@@ -73,12 +80,57 @@ namespace IGL
                 if (string.IsNullOrEmpty(Content))
                     return null;
                 else
-                    return JsonSerializerHelper.Deserialize<GameEvent>(DecryptStringAES(Content));
+                {
+                    if (CommonConfiguration.Instance.SerializationConfiguration.IsJsonEnabled)
+                    {
+                        if (CommonConfiguration.Instance.EncryptionConfiguration.IsEncryptionEnabled)
+                        {
+                            return JsonSerializerHelper.Deserialize<GameEvent>(DecryptStringAES(Content));
+                        }
+                        else
+                        {
+                            return JsonSerializerHelper.Deserialize<GameEvent>(Content);
+                        }
+                    }
+                    else
+                    {
+                        if (CommonConfiguration.Instance.EncryptionConfiguration.IsEncryptionEnabled)
+                        {
+                            return GameEventSerializer.Deserialize(DecryptStringAES(Content));
+                        }
+                        else
+                        {
+                            return GameEventSerializer.Deserialize(Content);
+                        }
+                    }
+                    
+                }
 
             }
             set
             {
-                Content = EncryptStringAES(JsonSerializerHelper.Serialize(value));
+                if (CommonConfiguration.Instance.SerializationConfiguration.IsJsonEnabled)
+                {
+                    if (CommonConfiguration.Instance.EncryptionConfiguration.IsEncryptionEnabled)
+                    {
+                        Content = EncryptStringAES(JsonSerializerHelper.Serialize(value));
+                    }
+                    else
+                    {
+                        Content = JsonSerializerHelper.Serialize(value);
+                    }
+                }
+                else
+                {
+                    if (CommonConfiguration.Instance.EncryptionConfiguration.IsEncryptionEnabled)
+                    {
+                        Content = EncryptStringAES(GameEventSerializer.Serialize(value));
+                    }
+                    else
+                    {
+                        Content = GameEventSerializer.Serialize(value);
+                    }
+                }
             }
         }
 
@@ -88,7 +140,7 @@ namespace IGL
          * http://stackoverflow.com/questions/202011/encrypt-and-decrypt-a-string
          ************************************/
 
-        public static byte[] SALT = Encoding.ASCII.GetBytes("o6806642kbM7c5");
+        public static byte[] SALT = Encoding.ASCII.GetBytes(CommonConfiguration.Instance.EncryptionConfiguration.Salt);
 
         /// <summary>
         /// Encrypt the given string using AES.  The string can be decrypted using 

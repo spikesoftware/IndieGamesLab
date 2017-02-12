@@ -60,10 +60,14 @@ namespace IGL.Client.Tests
                 // retrieve security token
                 var token = ServiceBusWriter.Token;
 
+                var retries = 0;
                 while (token == null)
                 {
                     Thread.Sleep(30);
                     token = ServiceBusWriter.Token;
+                    retries++;
+
+                    Assert.IsTrue(retries < 100, "Failed number of retries.  Take a look at the configuration.");
                 }                
 
                 for (int i = 0; i < 10; i++)

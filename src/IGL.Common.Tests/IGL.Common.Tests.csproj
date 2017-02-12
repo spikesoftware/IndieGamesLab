@@ -73,6 +73,7 @@
     <Compile Include="Helpers\SampleGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GamePacketConfigurationTests.cs" />
+    <Compile Include="GamePacketSerializationTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IGL.Common\IGL.Common.csproj">

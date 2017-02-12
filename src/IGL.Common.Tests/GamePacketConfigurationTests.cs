@@ -10,6 +10,8 @@ namespace IGL.Common.Tests
         [TestMethod]
         public void ReadFromConfig()
         {
+            // force the refresh of configuration 
+            CommonConfiguration.Instance = null;
 
             GamePacketConfigurationSection config = (GamePacketConfigurationSection)System.Configuration.ConfigurationManager.GetSection("gamePacketConfigurationGroup/gamePacketConfiguration");
 
