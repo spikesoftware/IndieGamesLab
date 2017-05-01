@@ -27,7 +27,11 @@ namespace IGL.Client
         {
             if(!_isHandlingRequest && _packets.Count > 0)
             {
-                lock(_syncRoot)
+                // this will start the retrieve of a token
+                if (Token == null)
+                    return;
+
+                lock (_syncRoot)
                 {
                     _isHandlingRequest = true;
                     var packet = _packets.Dequeue();

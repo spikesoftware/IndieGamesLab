@@ -32,13 +32,13 @@ namespace IGL
 
     public static class DatacontractSerializerHelper
     {
-        public static string Serialize<T>(T item)
+        public static string Serialize<T>(T item, List<Type> knownTypes = null)
         {
             if (item != null)
             {
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
-                    List<Type> knownTypes = new List<Type> { typeof(List<string>), typeof(NameValueCollection) };
+                    // List<Type> knownTypes = new List<Type> { typeof(List<string>), typeof(NameValueCollection) };
                     DataContractSerializer serializer = new DataContractSerializer(typeof(T), knownTypes);
                     serializer.WriteObject(memoryStream, item);
                     return Encoding.UTF8.GetString(memoryStream.ToArray());
