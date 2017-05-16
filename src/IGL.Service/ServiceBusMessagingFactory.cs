@@ -44,5 +44,15 @@ namespace IGL.Service
 
             throw new ApplicationException(string.Format("Queue {0} has not been initialised.  Use ServiceBusMessagingFactory.Initialise() first.", queueName));
         }
+
+        public static void CreateSubscription(string topic, string subscription)
+        {
+            var namespaceManager = NamespaceManager.CreateFromConnectionString(ConnectionString);
+            
+            if (namespaceManager.TopicExists(topic) && !namespaceManager.SubscriptionExists(topic, subscription))
+            {
+                namespaceManager.CreateSubscription(topic, subscription);
+            }
+        }
     }
 }
