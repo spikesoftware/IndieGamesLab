@@ -9,13 +9,18 @@ namespace IGL.Service
     {        
         public static string ConnectionString = ConfigurationManager.AppSettings["AzureServiceBusConnectionString"];
         
-        static public QueueClient GetQueueClientByName(string queueName)
+        static public QueueClient GetQueueClientByName(string queueName, bool requiresSession = false)
         {
             var namespaceManager = NamespaceManager.CreateFromConnectionString(ConnectionString);
 
             if (!namespaceManager.QueueExists(queueName))
             {
-                namespaceManager.CreateQueue(queueName);
+                var description = new QueueDescription(queueName)
+                {
+                    RequiresSession = requiresSession
+                };
+
+                namespaceManager.CreateQueue(description);
             }
 
             return QueueClient.CreateFromConnectionString(ConnectionString, queueName);
