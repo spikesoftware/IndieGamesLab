@@ -29,7 +29,7 @@ namespace IGL.Client.Tests
 #else
             using (Microsoft.QualityTools.Testing.Fakes.ShimsContext.Create())
             {
-                Configuration.ServiceNamespace = "avalidnamespace";
+                CommonConfiguration.Instance.BackboneConfiguration.ServiceNamespace = "avalidnamespace";
 
                 Faker.FakeOut();
 #endif                

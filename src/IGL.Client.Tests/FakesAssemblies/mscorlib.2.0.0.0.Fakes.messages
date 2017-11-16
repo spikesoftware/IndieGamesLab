@@ -1562,4 +1562,4 @@ J:\git\IndieGamesLab\src\IGL.Client.Tests\Fakes\mscorlib.fakes : warning : Canno
 J:\git\IndieGamesLab\src\IGL.Client.Tests\Fakes\mscorlib.fakes : warning : Cannot generate stub for System.Runtime.Versioning.ResourceScope: type is a value type.
 J:\git\IndieGamesLab\src\IGL.Client.Tests\Fakes\mscorlib.fakes : warning : Cannot generate stub for System.Runtime.Versioning.SxSRequirements: type is a value type.
 J:\git\IndieGamesLab\src\IGL.Client.Tests\Fakes\mscorlib.fakes : warning : Cannot generate stub for System.Runtime.Versioning.VersioningHelper: type is sealed.
-J:\git\IndieGamesLab\src\IGL.Client.Tests\Fakes\mscorlib.fakes : warning : Cannot generate stub for <PrivateImplementationDetails>{74A297D3-7D02-4DFA-BE01-ADADA75BF6B9}: type is not supported because of internal limitations.
+J:\git\IndieGamesLab\src\IGL.Client.Tests\Fakes\mscorlib.fakes : warning : Cannot generate stub for <PrivateImplementationDetails>{07681CC0-A801-4F41-BF13-92FB32C540B8}: type is not supported because of internal limitations.
