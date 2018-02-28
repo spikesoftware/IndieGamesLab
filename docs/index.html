@@ -1,0 +1,43 @@
+IndieGamesLab is a messaging platform built on Microsoft Azure. The basis of the platform has been evolving since 2009 and targets indie game developers wanting a low cost but flexible cloud solution.
+<h1>Goals</h1>
+The goals of IndieGamesLab are as follows:
+<ul>
+ 	<li>Create a messaging platform for indie game developers</li>
+ 	<li>Setting up the messaging platform should be as simple as possible</li>
+ 	<li>The platform should be easily customized for different scenarios</li>
+ 	<li>The platform should be secure</li>
+ 	<li>The platform should be compatible with many game development including Unity and Construct2</li>
+</ul>
+IGL has been designed to not compete with existing messaging solution like <a href="https://www.photonengine.com/en-US/Photon">Photon </a>and <a href="https://unity3d.com/services/multiplayer">Unity Multiplayer</a> in regards to real time networking.  IGL is more suited for messaging scenarios requiring custom back-end processing, auditing/logging or turn-based games.
+<h1>Source</h1>
+The community repository for the framework is hosted on GIT: <a href="https://github.com/spikesoftware/IndieGamesLab">IndieGamesLab</a>.  The framework contains the common classes and core functionality for IGL.  The community repository for the samples is hosted on GIT: <a href="https://github.com/spikesoftware/IndieGamesLab-Samples">IndieGamesLab.Samples</a>.  The samples illustrate how the framework can be used in game development.  The source is only required if you wish to contribute to the community by making a change.
+<h1>Overview</h1>
+The solution is broken into two main components: Service and Client.  The intention is there will be multiple clients sending and receiving messages from a central service.  Each message will sent securely with encrypted content limiting the chance for packets to be intercepted and altered.  The communication uses the Azure Service Bus and can support communication at a global level though the speed and cost can be improved when multiple Azure data-centers are used and when the service bus and IGL Service are located in the same data-center.
+<h2>Getting Started in Azure</h2>
+There are many great resources to getting started in Azure.  Creating a subscription is simple:
+<ul>
+ 	<li><a href="https://azure.microsoft.com/en-us/free/">Create your free Azure account today</a></li>
+</ul>
+For the IGL backbone, you need to create a service bus at a minimum.
+<ul>
+ 	<li><a href="https://azure.microsoft.com/en-us/services/service-bus/">Service Bus</a></li>
+</ul>
+A service could be hosted in a number of ways from a local pc to a hosted service.  For example, a cloud service provide a simple economic way of getting a service in the cloud:
+<ul>
+ 	<li><a href="https://azure.microsoft.com/en-us/documentation/services/cloud-services/">Cloud Service Documentation</a></li>
+</ul>
+<h2>Credit</h2>
+Also, if you are a student or a startup there are Microsoft programs created to provide you with credit and guidance to get started.  And, if you are an existing MSDN subscriber you probably already have benefits.
+<ul>
+ 	<li><a href="https://azure.microsoft.com/en-us/pricing/member-offers/imagine/">Microsoft Image for Students</a></li>
+ 	<li><a href="https://bizspark.microsoft.com/default.aspx">Microsoft BizSpark</a></li>
+ 	<li><a href="https://azure.microsoft.com/en-us/pricing/member-offers/msdn-benefits/">MSDN Dev/Test Credit</a></li>
+</ul>
+<h2>Service</h2>
+The service is defines tasks for processing messages posted to the IGL backbone.  This is a .net library, IGL.Service and is available via Nuget: <a href="https://www.nuget.org/packages/IGL.Service/">IGL.Service</a>.
+
+Additional information on the IGL Service.
+<h2>Client</h2>
+A client is any technology that can make a https call.  There is a .net client library, IGL.Client, that designed to simplify the messaging and is available via Nuget: <a href="https://www.nuget.org/packages/IGL.Client/">IGL.Client</a>.
+
+Additional information on the <a href="http://azuregames.azurewebsites.net/client/">IGL Client</a>.
