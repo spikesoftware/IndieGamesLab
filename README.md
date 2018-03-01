@@ -10,7 +10,7 @@ IGL is a Visual Studio solution with the following requirements:
   * The project will build and can be tested without an active subscription using Microsoft Fakes
 
 ## IndieGamesLab
-Documentation is located at [IndieGamesLab](http://indiegameslab.com).
+Documentation is located in the wiki [IndieGamesLab](https://github.com/spikesoftware/IndieGamesLab/wiki).
 
 ## Nuget packages
 [IGL.Common](https://www.nuget.org/packages/IGL.Common)
