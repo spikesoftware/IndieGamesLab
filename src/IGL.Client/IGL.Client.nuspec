@@ -7,7 +7,7 @@
     <authors>$author$</authors>
     <owners>$author$</owners>    
     <licenseUrl>https://github.com/spikesoftware/IndieGamesLab/blob/master/LICENSE</licenseUrl>
-    <projectUrl>http://indiegameslab.com/</projectUrl>        
+    <projectUrl>https://github.com/spikesoftware/IndieGamesLab</projectUrl>        
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes>Initial release containing ServiceBusListener and ServiceBusWriter.</releaseNotes>
