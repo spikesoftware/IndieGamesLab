@@ -50,14 +50,19 @@ namespace IGL.Service
             throw new ApplicationException(string.Format("Queue {0} has not been initialised.  Use ServiceBusMessagingFactory.Initialise() first.", queueName));
         }
 
-        public static void CreateSubscription(string topic, string subscription)
+        public static void CreateSubscription(string topic, string subscription, string filter)
         {
             var namespaceManager = NamespaceManager.CreateFromConnectionString(ConnectionString);
             
             if (namespaceManager.TopicExists(topic) && !namespaceManager.SubscriptionExists(topic, subscription))
-            {
-                namespaceManager.CreateSubscription(topic, subscription);
+            {                
+                namespaceManager.CreateSubscription(topic, subscription, new SqlFilter(filter));
             }
+        }
+
+        public static SubscriptionClient CreateSubscriptionClient(string topic, string subscription)
+        {
+            return SubscriptionClient.CreateFromConnectionString(ConnectionString, topic, subscription, ReceiveMode.ReceiveAndDelete);            
         }
     }
 }
