@@ -7,5 +7,5 @@ namespace IGL
         public GamePacket GamePacket { get; set; }
     }
 
-    public delegate void GamePacketEventHandler(Object sender, GamePacketArgs e);    
+    public delegate void GamePacketEventHandler(object sender, GamePacketArgs e);
 }

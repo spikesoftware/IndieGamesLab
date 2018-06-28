@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace IGL.Configuration
+﻿namespace IGL.Configuration
 {
     public class EncryptionConfiguration
     {
