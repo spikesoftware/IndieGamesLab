@@ -11,15 +11,15 @@ namespace IGL.Service
 {
     public abstract class GamePacketReceiver
     {
-        private readonly IConfiguration _configuration;
-        private readonly ServiceBusMessagingFactory _factory;
+        protected readonly IConfiguration Configuration;
+        protected readonly ServiceBusMessagingFactory Factory;
 
         private QueueClient _client;
 
         public GamePacketReceiver(IConfiguration configuration, ServiceBusMessagingFactory factory)
         {
-            _configuration = configuration;
-            _factory = factory;
+            Configuration = configuration;
+            Factory = factory;
         }
 
         public event GamePacketErrorHandler OnListenerError;
@@ -31,7 +31,7 @@ namespace IGL.Service
                 throw new ApplicationException(
                     "GamePacketReceiver should be closed before listening is started again.");
 
-            _client = await _factory.GetQueueClientByName(queueName,
+            _client = await Factory.GetQueueClientByName(queueName,
                 !string.IsNullOrEmpty(session));
 
             if (string.IsNullOrEmpty(session))
@@ -64,35 +64,46 @@ namespace IGL.Service
 
         private async Task ProcessMessages(Message message, CancellationToken token)
         {
-            var packet = message.GetBody<GamePacket>(new DataContractSerializer(typeof(GamePacket)));
+            try
+            {
+                var packet = message.GetBody<GamePacket>(new DataContractSerializer(typeof(GamePacket)));
 
-            if (packet == null)
-            {
-                OnListenerError?.Invoke(this,
-                    new GamePacketErrorArgs {Message = "Message body was not serialized as a GamePacket."});
-                await _client.DeadLetterAsync(message.SystemProperties.LockToken,
-                    "Message body was not serialized as a GamePacket.");
-            }
-            else
-            {
-                if (HandleGamePacket(packet))
+                if (packet == null)
                 {
-                    OnGamePacketCompleted?.Invoke(this, new GamePacketArgs {GamePacket = packet});
-                    await _client.CompleteAsync(message.SystemProperties.LockToken);
+                    OnListenerError?.Invoke(this,
+                        new GamePacketErrorArgs { Message = "Message body was not serialized as a GamePacket." });
+                    await _client.DeadLetterAsync(message.SystemProperties.LockToken,
+                        "Message body was not serialized as a GamePacket.");
                 }
                 else
                 {
-                    OnListenerError?.Invoke(this,
-                        new GamePacketErrorArgs
-                        {
-                            GameEvent = packet,
-                            Message = "Message was not handled completely."
-                        });
+                    if (HandleGamePacket(packet))
+                    {
+                        OnGamePacketCompleted?.Invoke(this, new GamePacketArgs { GamePacket = packet });
+                        await _client.CompleteAsync(message.SystemProperties.LockToken);
+                    }
+                    else
+                    {
+                        OnListenerError?.Invoke(this,
+                            new GamePacketErrorArgs
+                            {
+                                GameEvent = packet,
+                                Message = "Message was not handled completely."
+                            });
 
-                    await _client.DeadLetterAsync(message.SystemProperties.LockToken,
-                        "Message was not handled completely.");
+                        await _client.DeadLetterAsync(message.SystemProperties.LockToken,
+                            "Message was not handled completely.");
+                    }
                 }
             }
+            catch (Exception e)
+            {
+                OnListenerError?.Invoke(this, new GamePacketErrorArgs
+                {
+                    Exception = e,
+                    Message = "GamePacketReceiver failed to ProcessMessage"
+                });
+            }            
         }
 
         private async Task ProcessSessionMessages(IMessageSession session, Message message, CancellationToken token)

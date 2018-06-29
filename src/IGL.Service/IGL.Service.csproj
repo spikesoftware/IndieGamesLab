@@ -5,12 +5,12 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>2.0.0</Version>
-    <Authors>Jeff Chilberto</Authors>
+    <Version>2.0.2</Version>
+    <Authors>Spike Software Ltd</Authors>
     <Company>Spike Software Ltd</Company>
     <PackageLicenseUrl>https://github.com/spikesoftware/IndieGamesLab/blob/master/LICENSE</PackageLicenseUrl>
     <Copyright>2016</Copyright>
-    <PackageReleaseNotes>Initial release containing GamePacketReceiver and ServiceBusMessagingFactory built for .Net Core 2</PackageReleaseNotes>
+    <PackageReleaseNotes>Updated to expose private Factory as protected for abstract GamePacketReceiver</PackageReleaseNotes>
     <PackageTags>C# Game IGL Azure Indie</PackageTags>
     <PackageProjectUrl>https://github.com/spikesoftware/IndieGamesLab</PackageProjectUrl>
     <Description>Service Library for IndieGamesLab server components</Description>
